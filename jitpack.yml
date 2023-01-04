@@ -1,0 +1,22 @@
+# From: https://www.jbang.dev/documentation/guide/latest/exporting.html
+before_install:
+  - sdk install java 11.0.15-tem
+  - sdk use java 11.0.15-tem
+  - curl -Ls https://sh.jbang.dev | bash -s - app setup
+  - curl -Ls https://github.com/codacy/git-version/releases/download/2.8.0/git-version -o git-version && chmod a+x git-version
+  - mkdir -p java
+install:
+  - cat <<EOF >> java/camel-k.java
+    //DEPS io.fabric8:kubernetes-client:$FABRIC8_VERSION
+    //DEPS io.fabric8:generator-annotations:$FABRIC8_VERSION
+    //DEPS io.sundr:builder-annotations:0.93.2
+    //DEPS org.projectlombok:lombok:1.18.24
+    //DEPS javax.validation:validation-api:2.0.1.Final
+    //SOURCES src/**.java
+    EOF
+  - ~/.jbang/bin/jbang io.fabric8:java-generator-cli:${FABRIC8_VERSION} --source config/crd/bases --target ./java/src
+  - ~/.jbang/bin/jbang export mavenrepo --force -O target --group=com.github.andreatp --artifact=istio-generated-extensions --version=$(./git-version) java/camel-k.java
+  - mkdir -p ~/.m2/repository
+  - cp -rv target/* ~/.m2/repository/
+env:
+  FABRIC8_VERSION: "6.3.1"
