@@ -1,0 +1,23 @@
+name: Test Release Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      release-version:
+        description: 'Version being released'
+        required: true
+      branch:
+        description: 'Branch to release from'
+        required: true
+        default: 'generated-extension'
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.release-version }}
