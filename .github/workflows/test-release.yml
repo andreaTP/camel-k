@@ -9,7 +9,7 @@ on:
       branch:
         description: 'Branch to release from'
         required: true
-        default: 'main'
+        default: 'generated-extension'
 
 jobs:
   release:
